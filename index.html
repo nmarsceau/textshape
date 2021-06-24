@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TextShape</title>
+    <style>
+      #text {
+        width: 100%;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TextShape</h1>
+    <textarea id="text"></textarea>
+    <section class="tools">
+      <button id="trim">Trim</button>
+      <button id="surround">Surround with quotes</button>
+      <button id="join">Join with ','</button>
+    </section>
+    <script>
+      const text = document.getElementById('text');
+      const trim = document.getElementById('trim');
+      const surround = document.getElementById('surround');
+      const join = document.getElementById('join');
+
+      function forEachLine(action) {
+        if (typeof action === 'function') {
+          const lines = text.value.split('\n');
+          const newLines = [];
+          for (const line of lines) {
+            newLines.push(action(line));
+          }
+          return newLines.join('\n');
+        }
+        else {return text.value;}
+      }
+
+      trim.addEventListener('click', event => {
+        text.value = forEachLine(line => line.trim());
+      });
+
+      surround.addEventListener('click', event => {
+        text.value = forEachLine(line => '\'' + line + '\'');
+      });
+
+      join.addEventListener('click', event => {
+        text.value = text.value.split('\n').join(',');
+      });
+
+      text.focus();
+    </script>
+  </body>
+</html>
