@@ -1,28 +1,63 @@
 <!doctype html>
-<html>
+<html lang="en" dir="ltr">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>TextShape</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0 0.25rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: 3rem 1fr 55vh;
+        height: 100vh;
+      }
+
+      @media screen and (min-width: 600px) {
+        .grid {
+          grid-template-rows: 3rem 1fr 50vh;
+        }
+      }
+
+      h1 {
+        font-family: monospace;
+        font-size: 2rem;
+        margin: 0;
+        padding: 0.25rem 0;
+        text-align: center;
+      }
+
       #text {
-        width: 100%;
-        height: 200px;
+        height: 100%;
+        resize: none;
+      }
+
+      #tools {
+        overflow-y: auto;
+        padding: 0.25rem 0;
       }
     </style>
   </head>
   <body>
-    <h1>TextShape</h1>
-    <textarea id="text"></textarea>
-    <section class="tools">
-      <button id="trim">Trim</button>
-      <button id="surround">Surround with quotes</button>
-      <button id="join">Join with ','</button>
-    </section>
+    <div class="grid">
+      <h1>TextShape</h1>
+      <textarea id="text"></textarea>
+      <section id="tools">
+        <button id="trim">Trim</button>
+        <button id="surround">Surround with quotes</button>
+        <button id="join">Join with ','</button>
+        <button id="reverse">Reverse</button>
+      </section>
+    </div>
     <script>
-      const text = document.getElementById('text');
-      const trim = document.getElementById('trim');
-      const surround = document.getElementById('surround');
-      const join = document.getElementById('join');
-
       function forEachLine(action) {
         if (typeof action === 'function') {
           const lines = text.value.split('\n');
@@ -35,17 +70,40 @@
         else {return text.value;}
       }
 
-      trim.addEventListener('click', event => {
-        text.value = forEachLine(line => line.trim());
-      });
+      const text = document.getElementById('text');
+      const tools = [
+        {
+          id: 'trim',
+          action: () => {
+            text.value = forEachLine(line => line.trim());
+          }
+        },
+        {
+          id: 'surround',
+          action: () => {
+            text.value = forEachLine(line => '\'' + line + '\'');
+          }
+        },
+        {
+          id: 'join',
+          action: () => {
+            text.value = text.value.split('\n').join(',');
+          }
+        },
+        {
+          id: 'reverse',
+          action: () => {
+            text.value = text.value.split('\n').reverse().join('\n');
+          }
+        }
+      ];
 
-      surround.addEventListener('click', event => {
-        text.value = forEachLine(line => '\'' + line + '\'');
-      });
-
-      join.addEventListener('click', event => {
-        text.value = text.value.split('\n').join(',');
-      });
+      for (const tool of tools) {
+        const tool_trigger = document.getElementById(tool.id);
+        if (tool_trigger !== null) {
+          tool_trigger.addEventListener('click', tool.action);
+        }
+      }
 
       text.focus();
     </script>
