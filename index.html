@@ -85,6 +85,7 @@
         <button id="surround">Surround with quotes</button>
         <button id="join">Join with ','</button>
         <button id="reverse">Reverse</button>
+        <button id="remove_unwanted_whitespace">Remove Unwanted Whitespace</button>
       </section>
     </div>
     <script>
@@ -124,6 +125,14 @@
           id: 'reverse',
           action: () => {
             text.value = text.value.split('\n').reverse().join('\n');
+          }
+        },
+        {
+          id: 'remove_unwanted_whitespace',
+          action: () => {
+            while (text.value.includes('  ')) {
+              text.value = text.value.replace('  ', ' ');
+            }
           }
         }
       ];
