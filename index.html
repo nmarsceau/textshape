@@ -35,9 +35,20 @@
         text-align: center;
       }
 
+      .text-container {
+        position: relative;
+      }
+
+      .text-container button#copy {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+      }
+
       #text {
         height: 100%;
         resize: none;
+        width: 100%;
       }
 
       #tools {
@@ -49,7 +60,10 @@
   <body>
     <div class="grid">
       <h1>TextShape</h1>
-      <textarea id="text"></textarea>
+      <div class="text-container">
+        <textarea id="text"></textarea>
+        <button id="copy">Copy</button>
+      </div>
       <section id="tools">
         <button id="trim">Trim</button>
         <button id="surround">Surround with quotes</button>
@@ -104,6 +118,15 @@
           tool_trigger.addEventListener('click', tool.action);
         }
       }
+
+      const copy = document.getElementById('copy');
+      copy.addEventListener('click', () => {
+        text.select();
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        copy.style.backgroundColor = '#d7f1d7';
+        setTimeout(() => copy.style.backgroundColor = null, 3000);
+      });
 
       text.focus();
     </script>
