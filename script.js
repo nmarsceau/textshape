@@ -130,10 +130,8 @@ const toolsConfig = [
     name: 'Remove Unwanted Whitespace',
     class: 'wide',
     options: null,
-    action: options => {
-      while (text.value.includes('  ')) {
-        text.value = text.value.replace('  ', ' ');
-      }
+    action: () => {
+      text.value = text.value.replace(/  +/gm, ' ');
     }
   },
   {
