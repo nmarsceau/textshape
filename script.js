@@ -136,6 +136,29 @@ const toolsConfig = [
       }
     }
   },
+  {
+    name: 'Reverse',
+    options: [
+      {
+        name: 'operator',
+        type: 'choose_one',
+        values: {
+          lines: 'Reverse lines',
+          text_in_line: 'Reverse text in each line'
+        },
+        default: 'lines',
+        inline: false
+      }
+    ],
+    action: options => {
+      if (options.operator === 'lines') {
+        text.value = text.value.split('\n').reverse().join('\n');
+      }
+      else if (options.operator === 'text_in_line') {
+        text.value = forEachLine(line => line.split('').reverse().join(''));
+      }
+    }
+  },
 ];
 
 for (const toolConfig of toolsConfig) {
