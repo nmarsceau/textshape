@@ -186,16 +186,18 @@ for (const toolConfig of toolsConfig) {
   toolButton.innerHTML = toolConfig.name;
   toolButton.addEventListener('click', () => {
     const options = {};
-    for (const option of toolConfig.options) {
-      const selected_options = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
-      if (selected_options.length > 0) {
-        if (option.type === 'choose_one') {
-          options[option.name] = selected_options[0].value;
-        }
-        else if (option.type === 'choose_many') {
-          options[option.name] = [];
-          for (const selected_option of selected_options) {
-            options[option.name].push(selected_option.value);
+    if (Array.isArray(toolConfig.options)) {
+      for (const option of toolConfig.options) {
+        const selected_options = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
+        if (selected_options.length > 0) {
+          if (option.type === 'choose_one') {
+            options[option.name] = selected_options[0].value;
+          }
+          else if (option.type === 'choose_many') {
+            options[option.name] = [];
+            for (const selected_option of selected_options) {
+              options[option.name].push(selected_option.value);
+            }
           }
         }
       }
