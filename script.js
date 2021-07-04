@@ -97,6 +97,43 @@ const toolsConfig = [
     }
   },
   {
+    name: 'Split',
+    class: 'tall',
+    options: [
+      {
+        name: 'character',
+        type: 'choose_many',
+        values: {
+          comma: 'Comma',
+          space: 'Space',
+          tab: 'Tab',
+          custom: 'Custom'
+        },
+        default: [
+          'comma',
+          'space',
+          'tab'
+        ],
+        inline: false
+      }
+    ],
+    action: options => {
+      if (Array.isArray(options.character) && options.character.length > 0) {
+        const optionsCharacterLookup = {
+          comma: ',',
+          space: ' ',
+          tab: '\t'
+        };
+        const regexCharacters = ['\n'];
+        for (const character of options.character) {
+          regexCharacters.push(optionsCharacterLookup[character]);
+        }
+        const regex = new RegExp('[' + regexCharacters.join('') + ']');
+        text.value = text.value.split(regex).join('\n');
+      }
+    }
+  },
+  {
     name: 'Join',
     options: [
       {
@@ -210,12 +247,12 @@ for (const toolConfig of toolsConfig) {
     if (Array.isArray(toolConfig.options)) {
       for (const option of toolConfig.options) {
         const selected_options = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
-        if (selected_options.length > 0) {
-          if (option.type === 'choose_one') {
-            options[option.name] = selected_options[0].value;
-          }
-          else if (option.type === 'choose_many') {
-            options[option.name] = [];
+        if (option.type === 'choose_one') {
+          options[option.name] = selected_options.length > 0 ? selected_options[0].value : null;
+        }
+        else if (option.type === 'choose_many') {
+          options[option.name] = [];
+          if (selected_options.length > 0) {
             for (const selected_option of selected_options) {
               options[option.name].push(selected_option.value);
             }
