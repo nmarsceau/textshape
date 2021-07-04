@@ -210,8 +210,8 @@ for (const toolConfig of toolsConfig) {
         if (value === 'custom') {continue;}
         const optionInput = document.createElement('input');
         optionInput.type = option.type === 'choose_one' ? 'radio' : 'checkbox';
-        optionInput.id = toolId + '_' + option.name + '_' + value;
-        optionInput.name = toolId + '_' + option.name;
+        optionInput.id = `${toolId}_${option.name}_${value}`;
+        optionInput.name = `${toolId}_${option.name}`;
         optionInput.value = value;
         if (
           (
@@ -226,7 +226,7 @@ for (const toolConfig of toolsConfig) {
           optionInput.setAttribute('checked', 'checked');
         }
         const optionLabel = document.createElement('label');
-        optionLabel.htmlFor = toolId + '_' + option.name + '_' + value;
+        optionLabel.htmlFor = `${toolId}_${option.name}_${value}`;
         optionLabel.innerHTML = display;
         if (option.inline ?? true) {
           toolRow.append(optionInput, optionLabel);
@@ -246,15 +246,15 @@ for (const toolConfig of toolsConfig) {
     const options = {};
     if (Array.isArray(toolConfig.options)) {
       for (const option of toolConfig.options) {
-        const selected_options = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
+        const selectedOptions = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
         if (option.type === 'choose_one') {
-          options[option.name] = selected_options.length > 0 ? selected_options[0].value : null;
+          options[option.name] = selectedOptions.length > 0 ? selectedOptions[0].value : null;
         }
         else if (option.type === 'choose_many') {
           options[option.name] = [];
-          if (selected_options.length > 0) {
-            for (const selected_option of selected_options) {
-              options[option.name].push(selected_option.value);
+          if (selectedOptions.length > 0) {
+            for (const selectedOption of selectedOptions) {
+              options[option.name].push(selectedOption.value);
             }
           }
         }
