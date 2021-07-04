@@ -2,6 +2,8 @@
   0. Reset
   1. Layout
   2. Theme
+  3. Components
+    1. Overlay Buttons
 */
 
 
@@ -79,12 +81,6 @@ strong {
   position: relative;
 }
 
-.text-container button#copy {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-}
-
 #text {
   height: 100%;
   padding: 0.5rem;
@@ -126,16 +122,6 @@ h1 {
   text-align: center;
 }
 
-.text-container button#copy {
-  border: 1px solid gray;
-  background-color: #f5f5f5;
-  transition: background-color 0.25s ease-in-out;
-}
-
-.text-container button#copy.success {
-  background-color: #d7f1d7;
-}
-
 #text {
   font-size: 1.1rem;
   resize: none;
@@ -163,4 +149,21 @@ input[type="checkbox"]:not(:first-child) {
 button {
   padding: 0.5rem 1rem;
   font-size: 1.1rem;
+}
+
+/* 3. Components */
+
+/* 3.1 Overlay Buttons */
+.text-container .overlay-buttons {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.text-container button#copy {
+  transition: background-color 0.25s ease-in-out;
+}
+
+.text-container button#copy.success {
+  background-color: #d7f1d7;
 }

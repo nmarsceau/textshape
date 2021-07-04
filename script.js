@@ -193,7 +193,7 @@ const toolsConfig = [
         text.value = forEachLine(line => line.split('').reverse().join(''));
       }
     }
-  },
+  }
 ];
 
 function createToolContainer(toolConfig) {
@@ -284,6 +284,11 @@ copy.addEventListener('click', () => {
   window.getSelection().removeAllRanges();
   copy.classList.add('success');
   setTimeout(() => copy.classList.remove('success'), 3000);
+});
+
+const clear = document.getElementById('clear');
+clear.addEventListener('click', () => {
+  text.value = '';
 });
 
 text.focus();
