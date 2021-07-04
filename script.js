@@ -196,50 +196,48 @@ const toolsConfig = [
   },
 ];
 
-for (const toolConfig of toolsConfig) {
-  const toolId = toolConfig.name.toLowerCase().replace(' ', '_');
+function createToolContainer(toolConfig) {
   const toolContainer = document.createElement('div');
   toolContainer.classList.add('tool-card');
   if (toolConfig.hasOwnProperty('class')) {
     toolContainer.classList.add(toolConfig.class);
   }
-  if (Array.isArray(toolConfig.options)) {
-    for (const option of toolConfig.options) {
-      const toolRow = document.createElement('div');
-      for (const [value, display] of Object.entries(option.values)) {
-        if (value === 'custom') {continue;}
-        const optionInput = document.createElement('input');
-        optionInput.type = option.type === 'choose_one' ? 'radio' : 'checkbox';
-        optionInput.id = `${toolId}_${option.name}_${value}`;
-        optionInput.name = `${toolId}_${option.name}`;
-        optionInput.value = value;
-        if (
-          (
-            typeof option.default === 'string'
-            && option.default === value
-          )
-          || (
-            Array.isArray(option.default)
-            && option.default.includes(value)
-          )
-        ) {
-          optionInput.setAttribute('checked', 'checked');
-        }
-        const optionLabel = document.createElement('label');
-        optionLabel.htmlFor = `${toolId}_${option.name}_${value}`;
-        optionLabel.innerHTML = display;
-        if (option.inline ?? true) {
-          toolRow.append(optionInput, optionLabel);
-        }
-        else {
-          const toolOptionContainer = document.createElement('div');
-          toolOptionContainer.append(optionInput, optionLabel);
-          toolRow.append(toolOptionContainer);
-        }
-      }
-      toolContainer.append(toolRow);
+  return toolContainer;
+}
+
+function createOption(toolId, option) {
+  const optionContainer = document.createElement('div');
+  for (const [value, display] of Object.entries(option.values)) {
+    if (value === 'custom') {continue;}
+    const optionInput = document.createElement('input');
+    optionInput.type = option.type === 'choose_one' ? 'radio' : 'checkbox';
+    optionInput.id = `${toolId}_${option.name}_${value}`;
+    optionInput.name = `${toolId}_${option.name}`;
+    optionInput.value = value;
+    if (
+      (
+        typeof option.default === 'string'
+        && option.default === value
+      )
+      || (
+        Array.isArray(option.default)
+        && option.default.includes(value)
+      )
+    ) {
+      optionInput.setAttribute('checked', 'checked');
+    }
+    const optionLabel = document.createElement('label');
+    optionLabel.htmlFor = `${toolId}_${option.name}_${value}`;
+    optionLabel.innerHTML = display;
+    optionContainer.append(optionInput, optionLabel);
+    if (option.inline === false) {
+      optionContainer.append(document.createElement('br'));
     }
   }
+  return optionContainer;
+}
+
+function createToolButton(toolId, toolConfig) {
   const toolButton = document.createElement('button');
   toolButton.innerHTML = toolConfig.name;
   toolButton.addEventListener('click', () => {
@@ -264,7 +262,18 @@ for (const toolConfig of toolsConfig) {
   });
   const toolButtonContainer = document.createElement('div');
   toolButtonContainer.append(toolButton);
-  toolContainer.append(toolButtonContainer);
+  return toolButtonContainer;
+}
+
+for (const toolConfig of toolsConfig) {
+  const toolId = toolConfig.name.toLowerCase().replace(' ', '_');
+  const toolContainer = createToolContainer(toolConfig);
+  if (Array.isArray(toolConfig.options)) {
+    for (const option of toolConfig.options) {
+      toolContainer.append(createOption(toolId, option));
+    }
+  }
+  toolContainer.append(createToolButton(toolId, toolConfig));
   tools.append(toolContainer);
 }
 
