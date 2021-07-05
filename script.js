@@ -231,8 +231,8 @@ const toolsConfig = [
       {
         name: 'length',
         label: 'Length',
-        type: 'text',
-        default: '5'
+        type: 'number',
+        default: 5
       },
       {
         name: 'character',
@@ -271,6 +271,8 @@ function createOption(toolId, option) {
       return createCheckboxOption(toolId, option);
     case 'text':
       return createTextOption(toolId, option);
+    case 'number':
+      return createNumberOption(toolId, option);
   }
 }
 
@@ -345,6 +347,30 @@ function createTextOption(toolId, option) {
   return optionContainer;
 }
 
+function createNumberOption(toolId, option) {
+  const optionContainer = document.createElement('div');
+  const optionLabel = document.createElement('label');
+  optionLabel.htmlFor = `${toolId}_${option.name}`;
+  optionLabel.innerHTML = option.label;
+
+  const optionInput = document.createElement('input');
+  optionInput.type = 'number';
+  optionInput.id = `${toolId}_${option.name}`;
+  optionInput.name = `${toolId}_${option.name}`;
+  if (typeof option.default === 'string') {
+    option.default = Number(option.default);
+  }
+  if (typeof option.default === 'number' && !isNaN(option.default)) {
+    optionInput.value = option.default;
+  }
+
+  optionContainer.append(optionLabel, document.createElement('br'), optionInput);
+  if (option.inline === false) {
+    optionContainer.append(document.createElement('br'));
+  }
+  return optionContainer;
+}
+
 function getToolOptions(toolId, toolConfig) {
   const options = {};
   if (Array.isArray(toolConfig.options)) {
@@ -364,6 +390,7 @@ function getToolOptions(toolId, toolConfig) {
           }
           break;
         case 'text':
+        case 'number':
           options[option.name] = document.querySelector(`[name="${toolId}_${option.name}"]`).value;
           break;
       }
