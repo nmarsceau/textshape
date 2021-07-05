@@ -193,6 +193,27 @@ const toolsConfig = [
         text.value = forEachLine(line => line.split('').reverse().join(''));
       }
     }
+  },
+  {
+    name: 'Replace',
+    class: 'tall',
+    options: [
+      {
+        name: 'find',
+        label: 'Find',
+        type: 'text'
+      },
+      {
+        name: 'replace',
+        label: 'Replace',
+        type: 'text'
+      }
+    ],
+    action: options => {
+      if (options.find !== '') {
+        text.value = text.value.replaceAll(options.find, options.replace);
+      }
+    }
   }
 ];
 
