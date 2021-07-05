@@ -214,6 +214,43 @@ const toolsConfig = [
         text.value = text.value.replaceAll(options.find, options.replace);
       }
     }
+  },
+  {
+    name: 'Pad',
+    class: 'tall',
+    options: [
+      {
+        name: 'direction',
+        type: 'radio',
+        values: {
+          left: 'Left',
+          right: 'Right'
+        },
+        default: 'left'
+      },
+      {
+        name: 'length',
+        label: 'Length',
+        type: 'text',
+        default: '5'
+      },
+      {
+        name: 'character',
+        type: 'radio',
+        values: {
+          zero: 'Zero',
+          space: 'Space',
+          custom: 'Custom'
+        },
+        default: 'zero'
+      }
+    ],
+    action: options => {
+      const padFunction = options.direction === 'right' ? 'padEnd' : 'padStart';
+      if (options.character === 'zero') {options.character = '0';}
+      else if (options.character === 'space') {options.character = ' ';}
+      text.value = forEachLine(line => line[padFunction](options.length, options.character));
+    }
   }
 ];
 
