@@ -71,6 +71,9 @@ const toolsConfig = [
     action: options => {
       let leftCharacter, rightCharacter;
       switch (options.character) {
+        case 'single_quotes':
+          leftCharacter = "'"; rightCharacter = "'";
+          break;
         case 'double_quotes':
           leftCharacter = '"'; rightCharacter = '"';
           break;
@@ -86,11 +89,8 @@ const toolsConfig = [
         case 'angle_brackets':
           leftCharacter = '<'; rightCharacter = '>';
           break;
-        case 'custom':
-          // TODO
-          break;
         default:
-          leftCharacter = "'"; rightCharacter = "'";
+          leftCharacter = options.character; rightCharacter = options.character;
           break;
       }
       text.value = forEachLine(line => `${leftCharacter}${line}${rightCharacter}`);
@@ -125,16 +125,26 @@ const toolsConfig = [
           tab: '\t'
         };
         const regexCharacters = ['\n'];
+        const customStrings = [];
         for (const character of options.character) {
-          regexCharacters.push(optionsCharacterLookup[character]);
+          if (optionsCharacterLookup.hasOwnProperty(character)) {
+            regexCharacters.push(optionsCharacterLookup[character]);
+          }
+          else {
+            customStrings.push(character);
+          }
         }
-        const regex = new RegExp('[' + regexCharacters.join('') + ']');
-        text.value = text.value.split(regex).join('\n');
+        let regex = `[${regexCharacters.join('')}]`;
+        for (const customString of customStrings) {
+          regex += `|(?:${customString})`;
+        }
+        text.value = text.value.split(new RegExp(regex)).join('\n');
       }
     }
   },
   {
     name: 'Join',
+    class: 'tall',
     options: [
       {
         name: 'character',
@@ -144,20 +154,21 @@ const toolsConfig = [
           empty_string: 'Empty String',
           custom: 'Custom'
         },
-        default: 'comma'
+        default: 'comma',
+        inline: false
       }
     ],
     action: options => {
       let character;
       switch (options.character) {
+        case 'comma':
+          character = ',';
+          break;
         case 'empty_string':
           character = '';
           break;
-        case 'custom':
-          // TODO
-          break;
         default:
-          character = ',';
+          character = options.character;
           break;
       }
       text.value = text.value.split('\n').join(character);
@@ -279,7 +290,6 @@ function createOption(toolId, option) {
 function createRadioOption(toolId, option) {
   const optionContainer = document.createElement('div');
   for (const [value, display] of Object.entries(option.values)) {
-    if (value === 'custom') {continue;}
     const optionInput = document.createElement('input');
     optionInput.type = 'radio';
     optionInput.id = `${toolId}_${option.name}_${value}`;
@@ -297,6 +307,19 @@ function createRadioOption(toolId, option) {
     if (option.inline === false) {
       optionContainer.append(document.createElement('br'));
     }
+
+    if (value === 'custom') {
+      const customValueContainer = document.createElement('div');
+      customValueContainer.hidden = true;
+
+      const customValueInput = document.createElement('input');
+      customValueInput.type = 'text';
+      customValueInput.name = `${toolId}_${option.name}_custom_value`;
+
+      customValueContainer.append(customValueInput);
+      optionContainer.append(customValueContainer);
+      optionContainer.addEventListener('change', () => customValueContainer.hidden = !optionInput.checked);
+    }
   }
   return optionContainer;
 }
@@ -304,7 +327,6 @@ function createRadioOption(toolId, option) {
 function createCheckboxOption(toolId, option) {
   const optionContainer = document.createElement('div');
   for (const [value, display] of Object.entries(option.values)) {
-    if (value === 'custom') {continue;}
     const optionInput = document.createElement('input');
     optionInput.type = 'checkbox';
     optionInput.id = `${toolId}_${option.name}_${value}`;
@@ -321,6 +343,18 @@ function createCheckboxOption(toolId, option) {
     optionContainer.append(optionInput, optionLabel);
     if (option.inline === false) {
       optionContainer.append(document.createElement('br'));
+    }
+    if (value === 'custom') {
+      const customValueContainer = document.createElement('div');
+      customValueContainer.hidden = true;
+
+      const customValueInput = document.createElement('input');
+      customValueInput.type = 'text';
+      customValueInput.name = `${toolId}_${option.name}_custom_value`;
+
+      customValueContainer.append(customValueInput);
+      optionContainer.append(customValueContainer);
+      optionInput.addEventListener('change', () => customValueContainer.hidden = !optionInput.checked);
     }
   }
   return optionContainer;
@@ -377,15 +411,28 @@ function getToolOptions(toolId, toolConfig) {
     for (const option of toolConfig.options) {
       switch (option.type) {
         case 'radio':
-          const selectedRadioOptions = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
-          options[option.name] = selectedRadioOptions.length > 0 ? selectedRadioOptions[0].value : null;
+          const selectedRadioOption = document.querySelector(`[name="${toolId}_${option.name}"]:checked`);
+          if (selectedRadioOption === null) {options[option.name] = null;}
+          else if (selectedRadioOption.value === 'custom') {
+            const customRadioOption = document.querySelector(`[name="${toolId}_${option.name}_custom_value"]`);
+            if (customRadioOption.value.trim() !== '') {
+              options[option.name] = customRadioOption.value.trim();
+            }
+          }
+          else {options[option.name] = selectedRadioOption.value;}
           break;
         case 'checkbox':
           const selectedCheckboxOptions = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
           options[option.name] = [];
           if (selectedCheckboxOptions.length > 0) {
             for (const selectedOption of selectedCheckboxOptions) {
-              options[option.name].push(selectedOption.value);
+              if (selectedOption.value === 'custom') {
+                const customCheckboxOption = document.querySelector(`[name="${toolId}_${option.name}_custom_value"]`);
+                if (customCheckboxOption.value.trim() !== '') {
+                  options[option.name].push(customCheckboxOption.value.trim());
+                }
+              }
+              else {options[option.name].push(selectedOption.value);}
             }
           }
           break;
