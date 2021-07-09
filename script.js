@@ -98,7 +98,6 @@ const toolsConfig = [
   },
   {
     name: 'Split',
-    class: 'tall',
     options: [
       {
         name: 'character',
@@ -144,7 +143,6 @@ const toolsConfig = [
   },
   {
     name: 'Join',
-    class: 'tall',
     options: [
       {
         name: 'character',
@@ -175,8 +173,7 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Remove Unwanted Whitespace',
-    class: 'wide',
+    name: 'Remove<br>Unwanted<br>Whitespace',
     options: null,
     action: () => {
       text.value = text.value.replace(/  +/gm, ' ');
