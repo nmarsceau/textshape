@@ -275,6 +275,16 @@ const toolsConfig = [
       else if (options.character === 'space') {options.character = ' ';}
       text.value = forEachLine(line => line[padFunction](options.length, options.character));
     }
+  },
+  {
+    id: 'remove_duplicates',
+    triggers: [
+      {id: 'remove_duplicates', display: 'Remove<br>Duplicates'}
+    ],
+    action: () => {
+      text.value = [...new Set(text.value.split('\n'))].join('\n');
+
+    }
   }
 ];
 
