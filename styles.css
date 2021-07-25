@@ -109,7 +109,7 @@ strong {
 #tools {
   display: grid;
   grid-auto-flow: dense;
-  grid-auto-rows: 175px;
+  grid-auto-rows: 210px;
   grid-gap: 1em;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   height: 100%;
@@ -127,6 +127,10 @@ strong {
   #tools .tool-card.big {
     grid-column: span 2;
   }
+}
+
+.tool-card button {
+  margin: 0.25rem;
 }
 
 @media screen and (min-aspect-ratio: 3/2) {

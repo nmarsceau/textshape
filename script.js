@@ -14,18 +14,8 @@ const text = document.getElementById('text');
 const tools = document.getElementById('tools');
 const toolsConfig = [
   {
-    name: 'Trim',
+    id: 'trim',
     options: [
-      {
-        name: 'operator',
-        type: 'radio',
-        values: {
-          left: 'Left',
-          right: 'Right',
-          both: 'Both'
-        },
-        default: 'both'
-      },
       {
         name: 'operand',
         type: 'radio',
@@ -36,10 +26,15 @@ const toolsConfig = [
         default: 'each_line'
       }
     ],
+    triggers: [
+      {id: 'left_trim', display: 'Left Trim'},
+      {id: 'trim', display: 'Trim'},
+      {id: 'right_trim', display: 'Right Trim'}
+    ],
     action: options => {
       let operator = 'trim';
-      if (options.operator === 'left') {operator = 'trimStart';}
-      else if (options.operator === 'right') {operator = 'trimEnd';}
+      if (options.trigger === 'left_trim') {operator = 'trimStart';}
+      else if (options.trigger === 'right_trim') {operator = 'trimEnd';}
       if (options.operand === 'entire_text') {
         text.value = text.value[operator]();
       }
@@ -49,7 +44,7 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Surround',
+    id: 'add_text',
     class: 'tall',
     options: [
       {
@@ -67,6 +62,11 @@ const toolsConfig = [
         default: 'single_quotes',
         inline: false
       }
+    ],
+    triggers: [
+      {id: 'prepend', display: 'Prepend'},
+      {id: 'surround', display: 'Surround'},
+      {id: 'append', display: 'Append'}
     ],
     action: options => {
       let leftCharacter, rightCharacter;
@@ -93,11 +93,19 @@ const toolsConfig = [
           leftCharacter = options.character; rightCharacter = options.character;
           break;
       }
-      text.value = forEachLine(line => `${leftCharacter}${line}${rightCharacter}`);
+      if (options.trigger === 'prepend') {
+        text.value = forEachLine(line => `${leftCharacter}${line}`);
+      }
+      else if (options.trigger === 'append') {
+        text.value = forEachLine(line => `${line}${rightCharacter}`);
+      }
+      else {
+        text.value = forEachLine(line => `${leftCharacter}${line}${rightCharacter}`);
+      }
     }
   },
   {
-    name: 'Split',
+    id: 'split',
     options: [
       {
         name: 'character',
@@ -115,6 +123,9 @@ const toolsConfig = [
         ],
         inline: false
       }
+    ],
+    triggers: [
+      {id: 'split', display: 'Split'}
     ],
     action: options => {
       if (Array.isArray(options.character) && options.character.length > 0) {
@@ -142,7 +153,7 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Join',
+    id: 'join',
     options: [
       {
         name: 'character',
@@ -155,6 +166,9 @@ const toolsConfig = [
         default: 'comma',
         inline: false
       }
+    ],
+    triggers: [
+      {id: 'join', display: 'Join'}
     ],
     action: options => {
       let character;
@@ -173,14 +187,17 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Remove<br>Unwanted<br>Whitespace',
+    id: 'remove_unwanted_whitespace',
     options: null,
+    triggers: [
+      {id: 'remove_unwanted_whitespace', display: 'Remove<br>Unwanted<br>Whitespace'}
+    ],
     action: () => {
       text.value = text.value.replace(/  +/gm, ' ');
     }
   },
   {
-    name: 'Reverse',
+    id: 'reverse',
     options: [
       {
         name: 'operator',
@@ -193,6 +210,9 @@ const toolsConfig = [
         inline: false
       }
     ],
+    triggers: [
+      {id: 'reverse', display: 'Reverse'}
+    ],
     action: options => {
       if (options.operator === 'lines') {
         text.value = text.value.split('\n').reverse().join('\n');
@@ -203,8 +223,7 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Replace',
-    class: 'tall',
+    id: 'replace',
     options: [
       {
         name: 'find',
@@ -217,6 +236,9 @@ const toolsConfig = [
         type: 'text'
       }
     ],
+    triggers: [
+      {id: 'replace', display: 'Replace'}
+    ],
     action: options => {
       if (options.find !== '') {
         text.value = text.value.replaceAll(options.find, options.replace);
@@ -224,18 +246,8 @@ const toolsConfig = [
     }
   },
   {
-    name: 'Pad',
-    class: 'tall',
+    id: 'pad',
     options: [
-      {
-        name: 'direction',
-        type: 'radio',
-        values: {
-          left: 'Left',
-          right: 'Right'
-        },
-        default: 'left'
-      },
       {
         name: 'length',
         label: 'Length',
@@ -253,8 +265,12 @@ const toolsConfig = [
         default: 'zero'
       }
     ],
+    triggers: [
+      {id: 'left_pad', display: 'Left Pad'},
+      {id: 'right_pad', display: 'Right Pad'}
+    ],
     action: options => {
-      const padFunction = options.direction === 'right' ? 'padEnd' : 'padStart';
+      const padFunction = options.trigger === 'right_pad' ? 'padEnd' : 'padStart';
       if (options.character === 'zero') {options.character = '0';}
       else if (options.character === 'space') {options.character = ' ';}
       text.value = forEachLine(line => line[padFunction](options.length, options.character));
@@ -402,16 +418,16 @@ function createNumberOption(toolId, option) {
   return optionContainer;
 }
 
-function getToolOptions(toolId, toolConfig) {
+function getToolOptions(toolConfig) {
   const options = {};
   if (Array.isArray(toolConfig.options)) {
     for (const option of toolConfig.options) {
       switch (option.type) {
         case 'radio':
-          const selectedRadioOption = document.querySelector(`[name="${toolId}_${option.name}"]:checked`);
+          const selectedRadioOption = document.querySelector(`[name="${toolConfig.id}_${option.name}"]:checked`);
           if (selectedRadioOption === null) {options[option.name] = null;}
           else if (selectedRadioOption.value === 'custom') {
-            const customRadioOption = document.querySelector(`[name="${toolId}_${option.name}_custom_value"]`);
+            const customRadioOption = document.querySelector(`[name="${toolConfig.id}_${option.name}_custom_value"]`);
             if (customRadioOption.value.trim() !== '') {
               options[option.name] = customRadioOption.value.trim();
             }
@@ -419,12 +435,12 @@ function getToolOptions(toolId, toolConfig) {
           else {options[option.name] = selectedRadioOption.value;}
           break;
         case 'checkbox':
-          const selectedCheckboxOptions = document.querySelectorAll(`[name="${toolId}_${option.name}"]:checked`);
+          const selectedCheckboxOptions = document.querySelectorAll(`[name="${toolConfig.id}_${option.name}"]:checked`);
           options[option.name] = [];
           if (selectedCheckboxOptions.length > 0) {
             for (const selectedOption of selectedCheckboxOptions) {
               if (selectedOption.value === 'custom') {
-                const customCheckboxOption = document.querySelector(`[name="${toolId}_${option.name}_custom_value"]`);
+                const customCheckboxOption = document.querySelector(`[name="${toolConfig.id}_${option.name}_custom_value"]`);
                 if (customCheckboxOption.value.trim() !== '') {
                   options[option.name].push(customCheckboxOption.value.trim());
                 }
@@ -435,7 +451,7 @@ function getToolOptions(toolId, toolConfig) {
           break;
         case 'text':
         case 'number':
-          options[option.name] = document.querySelector(`[name="${toolId}_${option.name}"]`).value;
+          options[option.name] = document.querySelector(`[name="${toolConfig.id}_${option.name}"]`).value;
           break;
       }
     }
@@ -443,24 +459,32 @@ function getToolOptions(toolId, toolConfig) {
   return options;
 }
 
-function createToolButton(toolId, toolConfig) {
+function createToolButton(toolConfig, trigger) {
   const toolButton = document.createElement('button');
-  toolButton.innerHTML = toolConfig.name;
-  toolButton.addEventListener('click', () => toolConfig.action(getToolOptions(toolId, toolConfig)));
-  const toolButtonContainer = document.createElement('div');
-  toolButtonContainer.append(toolButton);
-  return toolButtonContainer;
+  toolButton.innerHTML = trigger.display;
+  toolButton.triggerId = trigger.id;
+  toolButton.addEventListener('click', event => {
+    const options = getToolOptions(toolConfig);
+    options.trigger = event.target.closest('button').triggerId;
+    toolConfig.action(options);
+  });
+  return toolButton;
 }
 
 for (const toolConfig of toolsConfig) {
-  const toolId = toolConfig.name.toLowerCase().replace(' ', '_');
   const toolContainer = createToolContainer(toolConfig);
   if (Array.isArray(toolConfig.options)) {
     for (const option of toolConfig.options) {
-      toolContainer.append(createOption(toolId, option));
+      toolContainer.append(createOption(toolConfig.id, option));
     }
   }
-  toolContainer.append(createToolButton(toolId, toolConfig));
+  if (Array.isArray(toolConfig.triggers)) {
+    const toolButtonContainer = document.createElement('div');
+    for (const trigger of toolConfig.triggers) {
+      toolButtonContainer.append(createToolButton(toolConfig, trigger));
+    }
+    toolContainer.append(toolButtonContainer);
+  }
   tools.append(toolContainer);
 }
 
