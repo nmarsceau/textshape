@@ -283,7 +283,20 @@ const toolsConfig = [
     ],
     action: () => {
       text.value = [...new Set(text.value.split('\n'))].join('\n');
-
+    }
+  },
+  {
+    id: 'shuffle',
+    triggers: [
+      {id: 'shuffle', display: 'Shuffle'}
+    ],
+    action: () => {
+      const lines = text.value.split('\n');
+      for (let i = lines.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * i);
+        [lines[i], lines[j]] = [lines[j], lines[i]];
+      }
+      text.value = lines.join('\n');
     }
   }
 ];
