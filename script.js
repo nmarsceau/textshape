@@ -277,6 +277,16 @@ const toolsConfig = [
     }
   },
   {
+    id: 'case',
+    triggers: [
+      {id: 'to_upper', display: 'To Uppercase'},
+      {id: 'to_lower', display: 'To Lowercase'}
+    ],
+    action: options => {
+      text.value = text.value[options.trigger === 'to_upper' ? 'toUpperCase' : 'toLowerCase']();
+    }
+  },
+  {
     id: 'remove_duplicates',
     triggers: [
       {id: 'remove_duplicates', display: 'Remove<br>Duplicates'}
