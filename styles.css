@@ -228,10 +228,6 @@ button:active {
   transition: background-color 0.25s ease-in-out;
 }
 
-.text-container button#copy.success {
-  background-color: #d7f1d7;
-}
-
 /* 3.2 Message */
 #message {
   position: absolute;

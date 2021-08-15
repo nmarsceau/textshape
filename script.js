@@ -541,8 +541,7 @@ copy.addEventListener('click', () => {
   text.select();
   document.execCommand('copy');
   window.getSelection().removeAllRanges();
-  copy.classList.add('success');
-  setTimeout(() => copy.classList.remove('success'), 3000);
+  showMessage('success', 'Copied!');
 });
 
 const clear = document.getElementById('clear');
