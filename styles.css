@@ -5,6 +5,7 @@
   2. Theme
   3. Components
     1. Overlay Buttons
+    2. Message
 */
 
 /* Variables */
@@ -229,4 +230,28 @@ button:active {
 
 .text-container button#copy.success {
   background-color: #d7f1d7;
+}
+
+/* 3.2 Message */
+#message {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  color: var(--white);
+  font-size: 1.2em;
+  display: none;
+}
+
+#message.active {
+  display: block;
+}
+
+#message.error {
+  background-color: red;
+}
+
+#message.success {
+  background-color: var(--carolina-blue);
 }

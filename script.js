@@ -308,6 +308,21 @@ const toolsConfig = [
       }
       text.value = lines.join('\n');
     }
+  },
+  {
+    id: 'validate_json',
+    triggers: [
+      {id: 'validate_json', display: 'Validate JSON'}
+    ],
+    action: () => {
+      try {
+        JSON.parse(text.value);
+        showMessage('success', 'Valid JSON!');
+      }
+      catch (error) {
+        showMessage('error', error.message, 6);
+      }
+    }
   }
 ];
 
@@ -536,3 +551,15 @@ clear.addEventListener('click', () => {
 });
 
 text.focus();
+
+function showMessage(type, text, duration = 3) {
+  const messageElement = document.getElementById('message');
+  const classes = ['active'];
+  if (['success', 'error'].includes(type)) {classes.push(type);}
+  messageElement.innerHTML = text;
+  messageElement.classList.add(...classes);
+  setTimeout(() => {
+    messageElement.innerHTML = '';
+    messageElement.classList.remove(...classes);
+  }, duration * 1000);
+}
