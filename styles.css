@@ -79,7 +79,7 @@ strong {
 .grid {
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 2.5rem 1fr 50vh;
+  grid-template-rows: 2.5rem 6rem 1fr 50vh;
   height: 100vh;
   margin: auto;
   max-width: 1200px;
@@ -137,9 +137,10 @@ strong {
 @media screen and (min-aspect-ratio: 3/2) {
   .grid {
     grid-template-columns: 3fr 2fr;
-    grid-template-rows: 2.5rem calc(100vh - 3rem);
+    grid-template-rows: 2.5rem 2rem calc(100vh - 5.5rem);
     grid-template-areas:
       "header header"
+      "alert alert"
       "text tools"
     ;
     max-width: unset;
@@ -148,6 +149,10 @@ strong {
 
   .grid h1 {
     grid-area: header;
+  }
+
+  .grid .deprecatedAlert {
+	grid-area: alert;
   }
 
   .text-container {
@@ -171,6 +176,12 @@ h1 {
   margin: 0;
   padding: 0.25rem 0 0;
   text-align: center;
+}
+
+.deprecatedAlert {
+	text-align: center;
+	background-color: lightpink;
+	color: darkred;
 }
 
 #text {
